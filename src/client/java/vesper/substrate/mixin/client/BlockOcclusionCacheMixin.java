@@ -1,7 +1,6 @@
-package me.kirillirik.bedrodium.mixin;
+package vesper.substrate.mixin.client;
 
-import me.jellysquid.mods.sodium.client.render.chunk.compile.pipeline.BlockOcclusionCache;
-import me.kirillirik.bedrodium.Bedrodium;
+import vesper.substrate.Substrate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -19,8 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  *
  * @author kirillirik
  * @author VidTu
+ * @author VesMaybeVesper
  */
-@Mixin(value = BlockOcclusionCache.class, remap = false)
+@Mixin(value = net.caffeinemc.mods.sodium.client.render.chunk.compile.pipeline.BlockOcclusionCache.class, remap = false)
 @Environment(EnvType.CLIENT)
 public abstract class BlockOcclusionCacheMixin {
     /**
@@ -35,9 +35,9 @@ public abstract class BlockOcclusionCacheMixin {
 
     // Injects into head of Sodium occlusion cache check to prevent rendering.
     @Inject(method = "shouldDrawSide", at = @At("HEAD"), cancellable = true)
-    public void bedrodium$shouldDrawSide$head(BlockState selfState, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> cir) {
+    public void substrate$shouldDrawSide$head(BlockState selfState, BlockView view, BlockPos pos, Direction facing, CallbackInfoReturnable<Boolean> cir) {
         // Skip if should be rendered.
-        if (Bedrodium.shouldRender(pos, facing)) return;
+        if (Substrate.shouldRender(pos, facing)) return;
 
         // Skip rendering.
         cir.setReturnValue(false);
