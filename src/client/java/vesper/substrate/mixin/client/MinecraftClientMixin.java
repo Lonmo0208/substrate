@@ -48,6 +48,7 @@ public abstract class MinecraftClientMixin {
 
         if (dimID.equals(DimensionTypes.OVERWORLD_ID)){
             newFloorY = dimension.minY();
+            newCeilingY = Integer.MAX_VALUE;
         } else if (dimID.equals(DimensionTypes.THE_NETHER_ID)) {
             newFloorY = dimension.minY();
             newCeilingY = dimension.logicalHeight() - 1;
@@ -58,11 +59,5 @@ public abstract class MinecraftClientMixin {
             Substrate.ceilingY.set(newCeilingY);
             Substrate.cameraController.updateVisibility();
         }
-
-        /*// Hide floor in overworld and nether.
-        Substrate.floorY = dimID.equals(DimensionTypes.OVERWORLD_ID) || dimID.equals(DimensionTypes.THE_NETHER_ID) ? dimension.minY() : -1;
-
-        // Hide ceiling in nether.
-        Substrate.ceilingY = dimID.equals(DimensionTypes.THE_NETHER_ID) ? dimension.logicalHeight() - 1 : -1;*/
     }
 }
