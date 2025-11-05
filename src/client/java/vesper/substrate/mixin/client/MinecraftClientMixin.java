@@ -54,11 +54,12 @@ public abstract class MinecraftClientMixin {
                 newFloorY = dimension.minY();
                 newCeilingY = dimension.logicalHeight() - 1;
 
-                MinecraftClient client = MinecraftClient.getInstance();
+                /*MinecraftClient client = MinecraftClient.getInstance();
                 if (client != null){
                     assert client.player != null;
+                    // this is crashing on world load for some reason
                     Substrate.lastPortalExitPos = client.player.getBlockPos();
-                }
+                }*/
             }
 
             if (newFloorY != Substrate.floorY.get() || newCeilingY != Substrate.ceilingY.get()){
