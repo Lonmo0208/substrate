@@ -1,15 +1,15 @@
 package dev.vesper.substrate.platform.neoforge;
 
 //? neoforge {
-/*
-import com.example.modtemplate.ModTemplate;
+
+import dev.vesper.substrate.Substrate;
 import net.neoforged.fml.common.Mod;
 
-@Mod(ModTemplate.MOD_ID)
+@Mod(Substrate.MOD_ID)
 public class NeoforgeEntrypoint {
 
 	public NeoforgeEntrypoint() {
-		ModTemplate.onInitialize();
+		Substrate.onInitialize();
 	}
 }
-*///?}
+//?}
