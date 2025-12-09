@@ -1,8 +1,8 @@
 package dev.vesper.substrate.platform.neoforge;
 
 //? neoforge {
-/*
-import com.example.modtemplate.platform.Platform;
+
+import dev.vesper.substrate.platform.Platform;
 import net.neoforged.fml.ModList;
 
 public class NeoforgePlatform implements Platform {
@@ -17,4 +17,4 @@ public class NeoforgePlatform implements Platform {
 		return ModLoader.NEOFORGE;
 	}
 }
-*///?}
+//?}

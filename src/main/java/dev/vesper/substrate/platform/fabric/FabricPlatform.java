@@ -1,7 +1,7 @@
 package dev.vesper.substrate.platform.fabric;
 
 //? fabric {
-
+/*
 import dev.vesper.substrate.platform.Platform;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -17,4 +17,4 @@ public class FabricPlatform implements Platform {
 		return ModLoader.FABRIC;
 	}
 }
-//?}
+*///?}
