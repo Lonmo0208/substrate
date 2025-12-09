@@ -1,5 +1,5 @@
 {
-  "package": "com.example.modtemplate.mixin",
+  "package": "dev.vesper.substrate.mixin",
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_21",
@@ -7,7 +7,7 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "dev.vesper.substrate.mixin.ExampleMixin"
+    "MinecraftClientMixin"
   ],
   "client": []
 }
