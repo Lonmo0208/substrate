@@ -1,7 +1,7 @@
 package dev.vesper.substrate.platform.fabric;
 
 //? fabric {
-/*
+
 import dev.vesper.substrate.Substrate;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -71,4 +71,4 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {serverDisabled.set(false);}));
 	}
 }
-*///?}
+//?}

@@ -15,10 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //? fabric {
-/*import dev.vesper.substrate.platform.fabric.FabricPlatform;
-*///?} neoforge {
-import dev.vesper.substrate.platform.neoforge.NeoforgePlatform;
- //?}
+import dev.vesper.substrate.platform.fabric.FabricPlatform;
+//?} neoforge {
+/*import dev.vesper.substrate.platform.neoforge.NeoforgePlatform;
+ *///?}
 import static dev.vesper.substrate.common.CameraController.aboveCeiling;
 import static dev.vesper.substrate.common.CameraController.belowFloor;
 
@@ -57,10 +57,10 @@ public class Substrate {
 
 	private static Platform createPlatformInstance() {
 		//? fabric {
-		/*return new FabricPlatform();
-		*///?} neoforge {
-		return new NeoforgePlatform();
-		 //?}
+		return new FabricPlatform();
+		//?} neoforge {
+		/*return new NeoforgePlatform();
+		 *///?}
 	}
 
 	public static boolean shouldRender(@NotNull BlockPos pos, @NotNull Direction facing) {

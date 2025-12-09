@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? neoforge{
-import net.neoforged.fml.ModList;
-//?}
+/*import net.neoforged.fml.ModList;
+*///?}
 
 import java.awt.*;
 
@@ -43,14 +43,14 @@ public abstract class MinecraftClientMixin {
 			if (dimID.equals(BuiltinDimensionTypes.NETHER_EFFECTS)){
 				newFloor = dimension.minY();
 				//? fabric{
-				/*newCeiling = dimension.logicalHeight() - 1;
-				*///?}
+				newCeiling = dimension.logicalHeight() - 1;
+				//?}
 				//? neoforge{
-				newCeiling = dimension.logicalHeight() - 2;
+				/*newCeiling = dimension.logicalHeight() - 2;
 				if (ModList.get().isLoaded("incendium")){
 					newCeiling = 192;
 				}
-				//?}
+				*///?}
 			}
 
 			if (newFloor != Substrate.floorY.get() || newCeiling != Substrate.ceilingY.get()){}
