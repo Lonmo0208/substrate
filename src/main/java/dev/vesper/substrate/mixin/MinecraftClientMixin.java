@@ -3,7 +3,14 @@ package dev.vesper.substrate.mixin;
 import dev.vesper.substrate.Substrate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.resources.ResourceLocation;
+//? 1.21.11{
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.Identifier;
+//?}
+//? 1.21.1 || 1.21.9{
+/*import net.minecraft.resources.ResourceLocation;
+*///?}
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.Contract;
@@ -17,6 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
+import static dev.vesper.substrate.Substrate.ceilingY;
+import static dev.vesper.substrate.Substrate.floorY;
+
 @Mixin(Minecraft.class)
 public abstract class MinecraftClientMixin {
 
@@ -24,8 +34,8 @@ public abstract class MinecraftClientMixin {
 	private MinecraftClientMixin(){
 		throw new AssertionError("No instances.");
 	}
-
-	@Inject(method = "updateLevelInEngines", at = @At("RETURN"))
+//? 1.21.1 || 1.21.9 {
+	/*@Inject(method = "updateLevelInEngines", at = @At("RETURN"))
 	private void afterLoadLevel(ClientLevel clientLevel, CallbackInfo ci) {
 		if (clientLevel == null) return;
 
@@ -46,6 +56,54 @@ public abstract class MinecraftClientMixin {
 				newCeiling = dimension.logicalHeight() - 1;
 				//?}
 				//? neoforge{
+				/^newCeiling = dimension.logicalHeight() - 2;
+				if (ModList.get().isLoaded("incendium")){
+					newCeiling = 192;
+				}
+				^///?}
+			}
+
+			if (newFloor != Substrate.floorY.get() || newCeiling != Substrate.ceilingY.get()){
+				Substrate.floorY.set(newFloor);
+				Substrate.ceilingY.set(newCeiling);
+
+				if (Substrate.lastPortalExitPos != null){
+					Substrate.cameraController.updateVisibilityAt(Substrate.lastPortalExitPos);
+				} else {
+					Substrate.cameraController.updateVisibility();
+				}
+
+				Substrate.lastPortalExitPos = null;
+			}
+		});
+	}
+	*///?}
+
+	//? 1.21.11 {
+	@Inject(method = "updateLevelInEngines(Lnet/minecraft/client/multiplayer/ClientLevel;Z)V", at = @At("RETURN"))
+	private void afterLoadLevel(ClientLevel clientLevel, boolean bl, CallbackInfo ci) {
+		if (clientLevel == null) return;
+
+		Minecraft.getInstance().execute(() ->{
+			DimensionType dimension = clientLevel.dimensionType();
+			//final Identifier dimID = dimension.effectsLocation();
+			// im not 100% sure what this is returning in its identifier the hope is something that matches BuiltinDimensionTypes.NETHER.identifier() to pass the check lmao
+			final Identifier dimID = clientLevel.dimension().identifier();
+
+			int newFloor = Integer.MIN_VALUE;
+			int newCeiling = Integer.MAX_VALUE;
+
+
+			if (dimID.equals(BuiltinDimensionTypes.OVERWORLD.identifier())){
+				newFloor = dimension.minY();
+				newCeiling = Integer.MAX_VALUE;
+			}
+			if (dimID.equals(BuiltinDimensionTypes.NETHER.identifier())){
+				newFloor = dimension.minY();
+				//? fabric{
+				newCeiling = dimension.logicalHeight() - 1;
+				//?}
+				//? neoforge{
 				/*newCeiling = dimension.logicalHeight() - 2;
 				if (ModList.get().isLoaded("incendium")){
 					newCeiling = 192;
@@ -53,8 +111,19 @@ public abstract class MinecraftClientMixin {
 				*///?}
 			}
 
-			if (newFloor != Substrate.floorY.get() || newCeiling != Substrate.ceilingY.get()){}
+			if (newFloor != floorY.get() || newCeiling != ceilingY.get()){
+				floorY.set(newFloor);
+				ceilingY.set(newCeiling);
+
+				if (Substrate.lastPortalExitPos != null){
+					Substrate.cameraController.updateVisibilityAt(Substrate.lastPortalExitPos);
+				} else {
+					Substrate.cameraController.updateVisibility();
+				}
+
+				Substrate.lastPortalExitPos = null;
+			}
 		});
 	}
-
+	//?}
 }
