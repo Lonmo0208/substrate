@@ -32,5 +32,10 @@
   },
   "mixins": [
     "substrate.mixins.json"
-  ],${dependencies}
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.1",
+    "fabric-api": "*",
+    "sodium": "*"
+  }
 }
