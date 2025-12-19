@@ -59,7 +59,9 @@ public class CameraController {
 
 		for (int x = sx - dist; x <= sx + dist; x++) {
 			for (int z = sz - dist; z <= sz + dist; z++) {
-				renderer.setSectionDirtyWithNeighbors(x, sy, z);
+				if (world.isClientSide()) {
+					renderer.setSectionDirtyWithNeighbors(x, sy, z);
+				}
 			}
 		}
 	}
