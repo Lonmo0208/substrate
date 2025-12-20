@@ -7,10 +7,10 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "BlockOcclusionCacheMixin",
-    "MinecraftClientMixin"
   ],
   "client": [
+    "BlockOcclusionCacheMixin",
+    "MinecraftClientMixin",
     "ClientLevelMixin"
   ]
 }
