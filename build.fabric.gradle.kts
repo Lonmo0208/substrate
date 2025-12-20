@@ -13,6 +13,10 @@ platform {
 			slug("fabric-api")
 			versionRange = ">=${prop("deps.fabric-api")}"
 		}
+		required("sodium"){
+			slug("sodium")
+			versionRange = ">=[${prop("deps.sodium")}]"
+		}
 		required("fabricloader") {
 			versionRange = ">=${libs.fabric.loader.get().version}"
 		}

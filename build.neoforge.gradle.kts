@@ -9,6 +9,10 @@ platform {
 		required("minecraft") {
 			forgeVersionRange = "[${prop("deps.minecraft")}]"
 		}
+		required("sodium"){
+			slug("sodium")
+			versionRange = ">=[${prop("deps.sodium")}]"
+		}
 		required("neoforge") {
 			forgeVersionRange = "[1,)"
 		}
