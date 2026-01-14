@@ -20,7 +20,6 @@ platform {
 		required("fabricloader") {
 			versionRange = ">=${libs.fabric.loader.get().version}"
 		}
-		optional("modmenu") {}
 	}
 }
 
