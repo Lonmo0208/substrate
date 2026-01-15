@@ -30,113 +30,132 @@ import static dev.vesper.substrate.Substrate.floorY;
 @Mixin(Minecraft.class)
 public abstract class MinecraftClientMixin {
 
-	@Contract(value = "-> fail", pure = true)
-	private MinecraftClientMixin(){
-		throw new AssertionError("No instances.");
-	}
+    @Contract(value = "-> fail", pure = true)
+    private MinecraftClientMixin() {
+        throw new AssertionError("No instances.");
+    }
 
-	@Inject(method = "updateLevelInEngines", at = @At("HEAD"))
-	private void substrate$updateLevelInEngines$head(ClientLevel clientLevel, CallbackInfo ci){
-		// Reset values as soon as levels change to avoid an issue with chunks that should render not doing so
-		if (clientLevel == null) return;
+    @Inject(method = "updateLevelInEngines", at = @At("HEAD"))
+    private void substrate$updateLevelInEngines$head(ClientLevel clientLevel, CallbackInfo ci) {
+        // Reset values as soon as levels change to avoid an issue with chunks that should render not doing so
+        if (clientLevel == null) return;
 
-		int oldFloor = floorY.get();
-		int oldCeiling = ceilingY.get();
+        int oldFloor = floorY.get();
+        int oldCeiling = ceilingY.get();
 
-		if (oldFloor != Integer.MIN_VALUE || oldCeiling != Integer.MAX_VALUE) {
-			floorY.set(Integer.MIN_VALUE);
-			ceilingY.set(Integer.MAX_VALUE);
-			Substrate.cameraController.updateVisibility();
-		}
-	}
+        if (oldFloor != Integer.MIN_VALUE || oldCeiling != Integer.MAX_VALUE) {
+            floorY.set(Integer.MIN_VALUE);
+            ceilingY.set(Integer.MAX_VALUE);
+
+            if (Substrate.cameraController != null) {
+                Substrate.cameraController.updateVisibility();
+            }
+        }
+    }
 
 //? 1.21.1 || 1.21.9 {
-	@Inject(method = "updateLevelInEngines", at = @At("RETURN"))
-	private void substrate$afterLoadLevel$return(ClientLevel clientLevel, CallbackInfo ci) {
-		if (clientLevel == null) return;
+    @Inject(method = "updateLevelInEngines", at = @At("RETURN"))
+    private void substrate$afterLoadLevel$return(ClientLevel clientLevel, CallbackInfo ci) {
+        if (clientLevel == null) return;
 
-		Minecraft.getInstance().execute(() ->{
-			DimensionType dimension = clientLevel.dimensionType();
-			final ResourceLocation dimID = dimension.effectsLocation();
+        Minecraft.getInstance().execute(() -> {
+            if (Minecraft.getInstance().level == null || Minecraft.getInstance().levelRenderer == null) {
+                return;
+            }
+            
+            DimensionType dimension = clientLevel.dimensionType();
+            final ResourceLocation dimID = dimension.effectsLocation();
 
-			int newFloor = Integer.MIN_VALUE;
-			int newCeiling = Integer.MAX_VALUE;
+            int newFloor = Integer.MIN_VALUE;
+            int newCeiling = Integer.MAX_VALUE;
 
-			if (dimID.equals(BuiltinDimensionTypes.OVERWORLD_EFFECTS)){
-				newFloor = dimension.minY();
-				newCeiling = Integer.MAX_VALUE;
-			}
-			if (dimID.equals(BuiltinDimensionTypes.NETHER_EFFECTS)){
-				newFloor = dimension.minY();
-				//? fabric{
-				newCeiling = dimension.logicalHeight() - 1;
-				//?}
-				//? neoforge{
-				/*newCeiling = dimension.logicalHeight() - 2;
-				if (ModList.get().isLoaded("incendium")){
-					newCeiling = 192;
-				}
-				*///?}
-			}
+            if (dimID.equals(BuiltinDimensionTypes.OVERWORLD_EFFECTS)) {
+                newFloor = dimension.minY();
+                newCeiling = Integer.MAX_VALUE;
+            }
+            if (dimID.equals(BuiltinDimensionTypes.NETHER_EFFECTS)) {
+                newFloor = dimension.minY();
+                //? fabric{
+                newCeiling = dimension.logicalHeight() - 1;
+                //?}
+                //? neoforge{
+                /*newCeiling = dimension.logicalHeight() - 2;
+                if (ModList.get().isLoaded("incendium")) {
+                    newCeiling = 192;
+                }
+                *///?}
+            }
 
-			if (newFloor != Substrate.floorY.get() || newCeiling != ceilingY.get()){
-				floorY.set(newFloor);
-				ceilingY.set(newCeiling);
+            if (newFloor != Substrate.floorY.get() || newCeiling != ceilingY.get()) {
+                floorY.set(newFloor);
+                ceilingY.set(newCeiling);
 
+                if (Substrate.cameraController == null) {
+                    return;
+                }
 
-				LocalPlayer player = Minecraft.getInstance().player;
-				if (player != null){
-					Substrate.cameraController.updateVisibilityAt(player.blockPosition());
-				} else {
-					Substrate.cameraController.updateVisibility();
-				}
-			}
-		});
-	}
-	//?}
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null) {
+                    Substrate.cameraController.updateVisibilityAt(player.blockPosition());
+                } else {
+                    Substrate.cameraController.updateVisibility();
+                }
+            }
+        });
+    }
+    //?}
 
-	//? 1.21.11 {
-	/*@Inject(method = "updateLevelInEngines(Lnet/minecraft/client/multiplayer/ClientLevel;Z)V", at = @At("RETURN"))
-	private void substrate$afterLoadLevel$return(ClientLevel clientLevel, boolean bl, CallbackInfo ci) {
-		if (clientLevel == null) return;
+    //? 1.21.11 {
+    /*@Inject(method = "updateLevelInEngines(Lnet/minecraft/client/multiplayer/ClientLevel;Z)V", at = @At("RETURN"))
+    private void substrate$afterLoadLevel$return(ClientLevel clientLevel, boolean bl, CallbackInfo ci) {
+        if (clientLevel == null) return;
 
-		Minecraft.getInstance().execute(() ->{
-			DimensionType dimension = clientLevel.dimensionType();
-			final Identifier dimID = clientLevel.dimension().identifier();
+        Minecraft.getInstance().execute(() -> {
+            // 安全检查：确保世界和渲染引擎已完全初始化
+            if (Minecraft.getInstance().level == null || Minecraft.getInstance().levelRenderer == null) {
+                return;
+            }
+            
+            DimensionType dimension = clientLevel.dimensionType();
+            final Identifier dimID = clientLevel.dimension().identifier();
 
-			int newFloor = Integer.MIN_VALUE;
-			int newCeiling = Integer.MAX_VALUE;
+            int newFloor = Integer.MIN_VALUE;
+            int newCeiling = Integer.MAX_VALUE;
 
+            if (dimID.equals(BuiltinDimensionTypes.OVERWORLD.identifier())) {
+                newFloor = dimension.minY();
+                newCeiling = Integer.MAX_VALUE;
+            }
+            if (dimID.equals(BuiltinDimensionTypes.NETHER.identifier())) {
+                newFloor = dimension.minY();
+                //? fabric{
+                newCeiling = dimension.logicalHeight() - 1;
+                //?}
+                //? neoforge{
+                /^newCeiling = dimension.logicalHeight() - 2;
+                if (ModList.get().isLoaded("incendium")) {
+                    newCeiling = 192;
+                }
+                ^///?}
+            }
 
-			if (dimID.equals(BuiltinDimensionTypes.OVERWORLD.identifier())){
-				newFloor = dimension.minY();
-				newCeiling = Integer.MAX_VALUE;
-			}
-			if (dimID.equals(BuiltinDimensionTypes.NETHER.identifier())){
-				newFloor = dimension.minY();
-				//? fabric{
-				newCeiling = dimension.logicalHeight() - 1;
-				//?}
-				//? neoforge{
-				/^newCeiling = dimension.logicalHeight() - 2;
-				if (ModList.get().isLoaded("incendium")){
-					newCeiling = 192;
-				}
-				^///?}
-			}
+            if (newFloor != floorY.get() || newCeiling != ceilingY.get()) {
+                floorY.set(newFloor);
+                ceilingY.set(newCeiling);
 
-			if (newFloor != floorY.get() || newCeiling != ceilingY.get()){
-				floorY.set(newFloor);
-				ceilingY.set(newCeiling);
+                // 安全检查：确保 cameraController 已初始化
+                if (Substrate.cameraController == null) {
+                    return;
+                }
 
-				LocalPlayer player = Minecraft.getInstance().player;
-				if (player != null){
-					Substrate.cameraController.updateVisibilityAt(player.blockPosition());
-				} else {
-					Substrate.cameraController.updateVisibility();
-				}
-			}
-		});
-	}
-	*///?}
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null) {
+                    Substrate.cameraController.updateVisibilityAt(player.blockPosition());
+                } else {
+                    Substrate.cameraController.updateVisibility();
+                }
+            }
+        });
+    }
+    *///?}
 }
